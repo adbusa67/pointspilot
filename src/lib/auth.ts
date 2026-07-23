@@ -117,6 +117,19 @@ export function updateUserPoints(
   amexPoints: number,
   aeroplanPoints: number,
 ): User | null {
+  return updateUserProfile(userId, { amexPoints, aeroplanPoints });
+}
+
+/**
+ * Apply a partial patch to a user's profile (balances, wallet, preferences).
+ * - Persists to pp_users_extra when the user was registered at runtime.
+ * - Always refreshes pp_session when it is the active user, so edits survive
+ *   a page refresh for the logged-in user (including demo/default users).
+ */
+export function updateUserProfile(
+  userId: string,
+  patch: Partial<Omit<User, "id" | "updatedAt">>,
+): User | null {
   const now = new Date().toISOString();
 
   // Try runtime users first.
@@ -126,7 +139,7 @@ export function updateUserPoints(
   let updated: User | null = null;
 
   if (idx !== -1) {
-    updated = { ...extra[idx], amexPoints, aeroplanPoints, updatedAt: now };
+    updated = { ...extra[idx], ...patch, updatedAt: now };
     extra[idx] = updated;
     saveExtraUsers(extra);
   } else {
@@ -136,7 +149,7 @@ export function updateUserPoints(
         ? getSession()
         : (defaultUsers.find((u) => u.id === userId) ?? null);
     if (base) {
-      updated = { ...base, amexPoints, aeroplanPoints, updatedAt: now };
+      updated = { ...base, ...patch, updatedAt: now };
     }
   }
 

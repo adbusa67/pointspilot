@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { ShieldCheck, Wallet, Sparkles, LucideIcon } from "lucide-react";
 import Card from "../components/Card";
 import Button from "../components/Button";
+import ChatBot from "../components/ChatBot";
+import { getSession } from "../lib/auth";
 
 type Feature = {
   icon: LucideIcon;
@@ -12,26 +14,28 @@ type Feature = {
 
 const features: Feature[] = [
   {
-    icon: ShieldCheck,
-    title: "Simple Access",
-    text: "Register and login to your personal points wallet.",
-    accent: "#006FCF",
+    icon: Sparkles,
+    title: "Personalized award strategy",
+    text: "AwardPilot reads your saved balances and only recommends redemptions you can actually book.",
+    accent: "#F01428",
   },
   {
     icon: Wallet,
-    title: "Balance Tracking",
-    text: "View and update your Amex and Aeroplan points instantly.",
-    accent: "#22C55E",
+    title: "Every points currency",
+    text: "Amex, Chase, Citi, Capital One, airline and hotel programs — with full transfer-partner logic.",
+    accent: "#006FCF",
   },
   {
-    icon: Sparkles,
-    title: "Smart Optimization",
-    text: "Find the lowest-points flight redemptions — coming soon.",
-    accent: "#F01428",
+    icon: ShieldCheck,
+    title: "Value-first, risk-aware",
+    text: "Options ranked by cents-per-point, with warnings on fuel surcharges and irreversible transfers.",
+    accent: "#22C55E",
   },
 ];
 
 export default function LandingPage() {
+  const session = getSession();
+
   return (
     <div className="relative overflow-hidden">
       {/* Ambient glow orbs (CSS only) */}
@@ -40,33 +44,41 @@ export default function LandingPage() {
         <div className="absolute top-32 right-10 h-64 w-64 rounded-full bg-aeroplan/20 blur-3xl animate-orb-drift [animation-delay:2s]" />
       </div>
 
-      {/* Hero */}
-      <section className="mx-auto flex w-full max-w-4xl flex-col items-center px-4 py-20 text-center sm:py-28">
-        <span className="glass mb-6 rounded-full px-4 py-1.5 text-xs font-medium text-slate-300 animate-fade-in">
-          Travel rewards, beautifully tracked
-        </span>
-        <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl animate-fade-in">
-          Turn your points into better flights
-        </h1>
-        <p className="mt-5 max-w-xl text-base text-slate-400 sm:text-lg animate-fade-in">
-          Track your Amex and Aeroplan balances in one premium dashboard.
-        </p>
-        <div className="mt-8 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row animate-fade-in">
-          <Link to="/register" className="w-full sm:w-auto">
-            <Button size="lg" fullWidth>
-              Get Started
-            </Button>
-          </Link>
-          <Link to="/login" className="w-full sm:w-auto">
-            <Button variant="secondary" size="lg" fullWidth>
-              Login
-            </Button>
-          </Link>
+      {/* Hero + core chatbot */}
+      <section className="mx-auto w-full max-w-5xl px-4 pt-14 pb-10 sm:pt-16">
+        <div className="mb-8 flex flex-col items-center text-center">
+          <span className="glass mb-5 rounded-full px-4 py-1.5 text-xs font-medium text-slate-300 animate-fade-in">
+            Your AI award-travel strategist
+          </span>
+          <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight text-white sm:text-5xl animate-fade-in">
+            Turn your points into better flights
+          </h1>
+          <p className="mt-4 max-w-xl text-base text-slate-400 sm:text-lg animate-fade-in">
+            Tell AwardPilot where you want to go. It builds the highest-value
+            award strategy from the points and miles you already have.
+          </p>
+          {!session ? (
+            <p className="mt-3 text-sm text-slate-500 animate-fade-in">
+              <Link to="/login" className="text-amex hover:underline">
+                Log in
+              </Link>{" "}
+              or{" "}
+              <Link to="/register" className="text-amex hover:underline">
+                create an account
+              </Link>{" "}
+              so AwardPilot can use your real balances.
+            </p>
+          ) : null}
+        </div>
+
+        {/* THE core feature */}
+        <div className="animate-fade-in">
+          <ChatBot />
         </div>
       </section>
 
-      {/* Features */}
-      <section className="mx-auto w-full max-w-5xl px-4 pb-20">
+      {/* Supporting features */}
+      <section className="mx-auto w-full max-w-5xl px-4 pb-16">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {features.map(({ icon: Icon, title, text, accent }) => (
             <Card
@@ -85,6 +97,21 @@ export default function LandingPage() {
             </Card>
           ))}
         </div>
+
+        {!session ? (
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link to="/register" className="w-full sm:w-auto">
+              <Button size="lg" fullWidth>
+                Create your points wallet
+              </Button>
+            </Link>
+            <Link to="/dashboard" className="w-full sm:w-auto">
+              <Button variant="secondary" size="lg" fullWidth>
+                Manage balances
+              </Button>
+            </Link>
+          </div>
+        ) : null}
       </section>
 
       {/* Footer */}
