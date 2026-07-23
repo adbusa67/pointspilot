@@ -21,10 +21,13 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 // Load env from .env.local (preferred) or .env, whichever exists.
+// package.json also passes --env-file=.env.local for older Node versions.
 for (const file of [".env.local", ".env"]) {
   if (fs.existsSync(file)) {
-    process.loadEnvFile(file);
-    console.log(`[awardpilot] loaded env from ${file}`);
+    if (typeof process.loadEnvFile === "function") {
+      process.loadEnvFile(file);
+      console.log(`[awardpilot] loaded env from ${file}`);
+    }
     break;
   }
 }

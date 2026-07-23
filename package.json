@@ -6,7 +6,7 @@
   "description": "PointPilot — track your travel reward points (Amex & Aeroplan) in one premium dashboard.",
   "scripts": {
     "dev": "vite",
-    "server": "node server/index.mjs",
+    "server": "node --env-file=.env.local server/index.mjs",
     "dev:all": "concurrently -k -n backend,web -c magenta,cyan \"npm:server\" \"npm:dev\"",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
